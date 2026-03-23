@@ -18,9 +18,9 @@ ModeEnsembleDNN is a physics-encoded deep neural network that predicts nonlinear
 
 | Case | Description | Structure | Nonlinearity |
 |------|-------------|-----------|--------------|
-| **Case 1** | 5-DoF Linear Shear Building | `Zerolength5DoF_99` | Near-linear (b=0.99) |
+| **Case 1** | 5-DoF Linear Shear Building | `Zerolength5DoF_99` | Linear (b=0.99) |
 | **Case 2** | 5-DoF Nonlinear Shear Building | `Zerolength5DoF_70` | Bilinear hysteresis (b=0.70) |
-| **Case 3** | 7-DoF Linear with Sparse Instrumentation | `Zerolength7DoF_99` | Near-linear, partial DoFs observed |
+| **Case 3** | 7-DoF Linear with Sparse Instrumentation | `Zerolength7DoF_99` | Linear, partial DoFs observed |
 
 ## Installation
 
