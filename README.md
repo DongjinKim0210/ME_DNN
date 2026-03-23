@@ -2,7 +2,7 @@
 
 **Data-efficient and Physically Interpretable Surrogate Model for Nonlinear Seismic Responses Using Physics-encoded Deep Neural Networks**
 
-Kim, D. & Song, J. (2026). *Earthquake Engineering & Structural Dynamics*.
+Kim, D. & Song, J. — Submitted to *Earthquake Engineering & Structural Dynamics*.
 
 ---
 
@@ -162,15 +162,7 @@ The model uses PEER NGA-West2 earthquake records stored in `../data/EQ_DATA/`. V
 
 ## Citation
 
-```bibtex
-@article{kim2026modeensemblednn,
-  title={Data-efficient and Physically Interpretable Surrogate Model for Nonlinear
-         Seismic Responses Using Physics-encoded Deep Neural Networks},
-  author={Kim, Dongjin and Song, Junho},
-  journal={Earthquake Engineering \& Structural Dynamics},
-  year={2026}
-}
-```
+This work has been submitted to *Earthquake Engineering & Structural Dynamics*. Citation details will be updated upon publication.
 
 ## License
 
