@@ -81,7 +81,7 @@ def _assign_mass(nDOF_Prop):
             raise ValueError("nodal_mass length must equal ndof or 1")
 
 
-def ZeroLengthMDoF(nDOF_Prop, dirfolder="outputdata"):
+def ZeroLengthMDoF(nDOF_Prop, dirfolder="."):
     """Create multi-DoF shear building with zeroLength elements and Steel01 material."""
     os.makedirs(dirfolder, exist_ok=True)
 

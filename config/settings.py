@@ -71,7 +71,7 @@ PREPROCESSING = {
 }
 
 TRAINING = {
-    "num_epochs": 100000,
+    "num_epochs": 100,
     "batch_size": 10,
     "validation_batch_size": 10,
     "num_train": 80,

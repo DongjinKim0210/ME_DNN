@@ -122,7 +122,7 @@ MED/
 |
 +-- data_store/                      # Output data files
 |   +-- ResultPreprocessing/         # Preprocessed .npz files
-|   +-- DeepLearningModels/          # Trained model checkpoints (.pth)
+|   +-- DeepLearningModels/          # Trained model checkpoints (.pth) and loss logs (.npz)
 |   +-- ResponseData/                # FE response data (temporary, cleaned after DB construction)
 |
 +-- Figures/                         # Generated figures (SVG/PNG)
@@ -155,6 +155,14 @@ All hyperparameters are centralized in `config/settings.py`:
 This project includes a Denoising Autoencoder (`models/denoising_dnn.py`) that can be trained to remove noise from ground motion acceleration time histories. However, the training database for the DAE is prohibitively large to distribute publicly. **The DAE training database can be shared upon request with the consent of all authors.**
 
 In this open-source release, the SNR level is set to 99 dB (`config/settings.py`: `NOISE = {"snr_db": [99]}`), which effectively treats the ground motion records as denoised acceleration time histories obtained from the DAE. This allows the release to focus on demonstrating the operation and performance of the physics-encoded neural network architecture across the three numerical case studies.
+
+## Pre-trained Weights
+
+The checkpoint files in `data_store/DeepLearningModels/` are initial models trained for only a few epochs. Train with the provided database for sufficient epochs to obtain an optimal model.
+
+## Database
+
+The SQLite databases and preprocessed `.npz` files exceed GitHub's file size limit and are not included in this repository. **These files can be shared upon request with the consent of all authors.** Once the database files are placed in `data_store/`, run `python main.py --case case1 --step preprocess` to generate the preprocessed data.
 
 ## Ground Motion Data
 

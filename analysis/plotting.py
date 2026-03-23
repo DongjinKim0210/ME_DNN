@@ -30,13 +30,17 @@ def plot_training_loss(train_loss, val_loss, checkpoint_epoch, title="", save=Fa
 
 
 def plot_response_comparison(t, y_pred, y_true, node_labels=None, node_colors=None,
-                              title="", save=False, fig_dir="Figures"):
+                              resp_type="acc", title="", save=False, fig_dir="Figures"):
     """Plot predicted vs true response time histories for each node.
 
     Args:
         node_colors: list of colors per node (e.g. 'blue' for instrumented,
                      'green' for reconstructed). Falls back to 'b' for all.
+        resp_type: 'acc' or 'dsp' — controls y-axis label and figure filename.
     """
+    ylabel_map = {"acc": "Acc [m/s²]", "dsp": "Disp [m]"}
+    ylabel = ylabel_map.get(resp_type, resp_type)
+
     n_nodes = y_pred.shape[0]
     fig, axes = plt.subplots(n_nodes, 1, figsize=(10, 3 * n_nodes), sharex=True)
     if n_nodes == 1:
@@ -47,14 +51,14 @@ def plot_response_comparison(t, y_pred, y_true, node_labels=None, node_colors=No
         axes[i].plot(t, y_true[i], 'k--', linewidth=0.8, label='Reference')
         axes[i].plot(t, y_pred[i], color=pred_color, linewidth=0.5, alpha=0.7,
                      label='Predicted')
-        axes[i].set_ylabel('Acc [m/s²]')
+        axes[i].set_ylabel(ylabel)
         axes[i].set_title(label)
         axes[i].legend(loc='upper right')
         axes[i].grid(True)
     axes[-1].set_xlabel('Time [s]')
     fig.suptitle(title)
     plt.tight_layout()
-    save_figure(save, f"resp_{title}", fig_dir)
+    save_figure(save, f"{resp_type}_{title}", fig_dir)
     plt.show()
 
 

@@ -6,7 +6,7 @@ ModeEnsembleDNN Pipeline Orchestrator
 Physics-encoded DNN for Seismic Response Prediction.
 
 Usage (terminal):
-    conda activate py310pytorch207opensees
+    conda activate myvenv
     python main.py --case case1 --step all
     python main.py --case case2 --step train
 
@@ -151,9 +151,11 @@ def cleanup_dat_files():
 
 
 def cleanup_zeropad_files():
-    """Delete all _ZeroPad files from EQ_DATA so only original .AT2 files remain."""
+    """Delete all ZeroPad files from EQ_DATA so only original .AT2 files remain."""
     eq_data_dir = PATHS['eq_data_dir']
+    # Match both *_ZeroPad (no ext) and *_ZeroPad.AT2
     zp_files = glob.glob(os.path.join(eq_data_dir, '**', '*_ZeroPad'), recursive=True)
+    zp_files += glob.glob(os.path.join(eq_data_dir, '**', '*_ZeroPad.AT2'), recursive=True)
     if not zp_files:
         return
     for f in zp_files:
@@ -407,20 +409,36 @@ def run_pipeline(case="case1", step="all", version=None):
     print(f"Version: {version}")
 
     props, mass, modes, freqs, Tns = build_structure(case_cfg)
-    at2paths = load_eq_filelist(exclude_vertical=DATA_GENERATION['exclude_vertical'], version=version)
-    print(f"EQ records available: {len(at2paths)} (vertical excluded)")
+
+    # Check if raw EQ data is available
+    eq_data_dir = PATHS['eq_data_dir']
+    has_eq_data = os.path.isdir(eq_data_dir) and any(
+        f.upper().endswith('.AT2') for f in os.listdir(eq_data_dir)
+        if os.path.isfile(os.path.join(eq_data_dir, f))
+    ) if os.path.isdir(eq_data_dir) else False
 
     run_all = (step == "all")
 
-    if step == "generate" or run_all:
+    if step in ("generate", "db") and not has_eq_data:
+        print(f"EQ_DATA not found at {eq_data_dir}. Cannot run '{step}' step.")
+        return
+
+    if has_eq_data:
+        at2paths = load_eq_filelist(exclude_vertical=DATA_GENERATION['exclude_vertical'], version=version)
+        print(f"EQ records available: {len(at2paths)} (vertical excluded)")
+    elif run_all:
+        print(f"EQ_DATA not found at {eq_data_dir}. Skipping generate/db steps.")
+
+    if step == "generate" or (run_all and has_eq_data):
         testat2_zp = step_generate(props, case_cfg, at2paths, paths)
 
-    if step == "db" or run_all:
+    if step == "db" or (run_all and has_eq_data):
         if 'testat2_zp' not in locals():
             n = DATA_GENERATION['num_samples'] or len(at2paths)
             testat2_zp = [p + '_ZeroPad' for p in at2paths[:n]]
         step_db(props, case_cfg, testat2_zp, paths, case_name, version)
         cleanup_dat_files()
+        cleanup_zeropad_files()
         cleanup_response_data()
 
     if step == "preprocess" or run_all:
@@ -431,9 +449,6 @@ def run_pipeline(case="case1", step="all", version=None):
 
     if step == "validate" or run_all:
         step_validate(case_cfg, paths, case_name, version)
-
-    # Cleanup temporary ZeroPad files
-    cleanup_zeropad_files()
 
     print("\nDone.")
 

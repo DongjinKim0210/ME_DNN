@@ -3,8 +3,10 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Data store: keep folder structure, exclude runtime-generated files
-#
+# Data store: large runtime-generated files (DB, preprocessed npz)
+data_store/*.db
+data_store/ResultPreprocessing/*.npz
+data_store/ResponseData/
 
 # IDE
 .vscode/

@@ -159,7 +159,8 @@ def run_validation(case_name, case_cfg, paths_cfg, training_cfg, noise_cfg,
     # Load preprocessed data
     data = np.load(pp_path)
     X_data = data['x_train_pad']
-    y_data = data['y_train_pad']
+    y_data = data['y_train_pad']          # acceleration
+    dsp_data = data['dsp_ts_pad']         # displacement
     X_mask = data['x_train_mask']
 
     dt = training_cfg.get('resample_dt', 0.01)
@@ -170,6 +171,8 @@ def run_validation(case_name, case_cfg, paths_cfg, training_cfg, noise_cfg,
     X_test = X_data[num_train + num_valid:]
     y_test = y_data[num_train + num_valid:, valid_dof, :]
     y_test_full = y_data[num_train + num_valid:]  # all DOFs for full-field comparison
+    dsp_test = dsp_data[num_train + num_valid:, valid_dof, :]
+    dsp_test_full = dsp_data[num_train + num_valid:]
     X_mask_test = X_mask[num_train + num_valid:]
 
     # Find checkpoint
@@ -252,8 +255,8 @@ def run_validation(case_name, case_cfg, paths_cfg, training_cfg, noise_cfg,
                 mass_raw = model.mass_diag_raw.cpu().numpy()
                 massmat = np.diag(mass_raw)
 
-            # 3. Modal Participation Factor
-            mpf = np.abs(
+            # 3. Modal Participation Factor (preserve sign, consistent with model.forward())
+            mpf = (
                 np.linalg.inv(modeshapes_raw @ massmat @ modeshapes_raw.T)
                 @ (modeshapes_raw @ massmat @ np.ones((n_modes, 1)))
             ).flatten()
@@ -298,19 +301,38 @@ def run_validation(case_name, case_cfg, paths_cfg, training_cfg, noise_cfg,
                     node_colors.append('green')
                     node_labels.append(f'Node {d + 1} (reconstructed)')
 
+            # Acceleration
             plot_response_comparison(
                 t, pred_np[:, :mask_len], true_np[:, :mask_len],
                 node_labels=node_labels, node_colors=node_colors,
-                title=f"{case_name}_test_{k}", save=save_figures, fig_dir=fig_dir,
+                resp_type="acc", title=f"{case_name}_test_{k}",
+                save=save_figures, fig_dir=fig_dir,
+            )
+            # Displacement
+            plot_response_comparison(
+                t, nodal_dsp_full[0, :, :mask_len], dsp_test_full[k, :, :mask_len],
+                node_labels=node_labels, node_colors=node_colors,
+                resp_type="dsp", title=f"{case_name}_test_{k}",
+                save=save_figures, fig_dir=fig_dir,
             )
         else:
             with torch.no_grad():
-                pred, _ = model(inp)
-            pred_np = pred.cpu().numpy()[0]
-            true_np = y_test[k]
+                pred_acc, pred_dsp = model(inp)
+            pred_acc_np = pred_acc.cpu().numpy()[0]
+            pred_dsp_np = pred_dsp.cpu().numpy()[0]
+            true_acc_np = y_test[k]
+            true_dsp_np = dsp_test[k]
+            # Acceleration
             plot_response_comparison(
-                t, pred_np[:, :mask_len], true_np[:, :mask_len],
-                title=f"{case_name}_test_{k}", save=save_figures, fig_dir=fig_dir,
+                t, pred_acc_np[:, :mask_len], true_acc_np[:, :mask_len],
+                resp_type="acc", title=f"{case_name}_test_{k}",
+                save=save_figures, fig_dir=fig_dir,
+            )
+            # Displacement
+            plot_response_comparison(
+                t, pred_dsp_np[:, :mask_len], true_dsp_np[:, :mask_len],
+                resp_type="dsp", title=f"{case_name}_test_{k}",
+                save=save_figures, fig_dir=fig_dir,
             )
 
     print(f"\n{case_name} validation complete. Figures saved to {fig_dir}/")
