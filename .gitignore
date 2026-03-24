@@ -4,9 +4,8 @@ __pycache__/
 *.pyo
 
 # Data store: large runtime-generated files (DB, preprocessed npz)
-data_store/*.db
+data_store/EQRESPDATA_Zerolength7DoF_99_v*.db
 data_store/ResultPreprocessing/*.npz
-data_store/ResponseData/
 
 # IDE
 .vscode/
