@@ -8,18 +8,18 @@ Kim, D. & Song, J. — Submitted to *Earthquake Engineering & Structural Dynamic
 
 ## Overview
 
-ModeEnsembleDNN is a physics-encoded deep neural network that predicts nonlinear seismic structural responses by embedding structural dynamics principles directly into the network architecture. The model consists of three core layers:
+ModeEnsembleDNN is a physics-encoded deep neural network that predicts seismic structural responses by embedding structural dynamics principles directly into the network architecture. The model consists of three core layers:
 
-1. **Duhamel Convolutional Layer** — Physics-encoded 1D convolution implementing the Duhamel integral with Mirror-IRF kernels (trainable: modal frequencies)
-2. **Mode Ensemble Layer** — Trainable mode shapes (with QR orthogonality constraint), trainable mass matrix, and Modal Participation Factor (MPF) calculation
-3. **Reconstruction Layer** — Modal superposition via Einstein summation, 2nd-order central difference (displacement to acceleration), Moving Average smoothing
+1. **Duhamel Convolutional Layer** — Physics-encoded convolution implementing the Duhamel integral with Mirror-IRF kernels
+2. **Mode Ensemble Layer** — Trainable mode shapes, trainable mass matrix, and Modal Participation Factor calculation
+3. **Reconstruction Layer** — Modal superposition, 2nd-order central difference (displacement to acceleration), Moving Average smoothing
 
 ## Numerical Examples
 
 | Case | Description | Structure | Nonlinearity |
 |------|-------------|-----------|--------------|
 | **Case 1** | 5-DoF Linear Shear Building | `Zerolength5DoF_99` | Linear (b=0.99) |
-| **Case 2** | 5-DoF Nonlinear Shear Building | `Zerolength5DoF_70` | Bilinear hysteresis (b=0.70) |
+| **Case 2** | 5-DoF Nonlinear Shear Building | `Zerolength5DoF_70` | Mild bilinear hysteresis (b=0.70) |
 | **Case 3** | 7-DoF Linear with Sparse Instrumentation | `Zerolength7DoF_99` | Linear, partial DoFs observed |
 
 ## Installation
@@ -93,8 +93,8 @@ All hyperparameters are centralized in `config/settings.py`:
 ## Key Features
 
 - **Physics-encoded architecture**: Structural dynamics principles (Duhamel integral, modal superposition) are embedded directly into the neural network layers, not learned from data alone
-- **Data-efficient**: Requires only ~40 training samples due to physics constraints
-- **Interpretable parameters**: Learned modal frequencies, mode shapes, and mass matrix are physically meaningful and directly comparable to reference values
+- **Data-efficient**: Requires a few training samples due to physics constraints
+- **Interpretable parameters**: Trainable modal frequencies, mode shapes, and mass matrix are physically meaningful and directly comparable to reference values
 - **Uncertainty handling**:
   - Epistemic: 10% C.O.V. Gaussian noise on structural frequencies
   - Aleatoric: SNR-based noise addition on ground motion inputs
