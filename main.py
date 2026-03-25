@@ -64,7 +64,7 @@ def _is_notebook():
 def parse_args():
     if _is_notebook():
         # In Jupyter: return defaults (override via run_pipeline())
-        return argparse.Namespace(case="case1", step="validate", version=None)
+        return argparse.Namespace(case="case1", step="all", version=None)
     parser = argparse.ArgumentParser(description="ModeEnsembleDNN Pipeline")
     parser.add_argument("--case", type=str, default="case1",
                         choices=["case1", "case2", "case3"],

@@ -225,7 +225,7 @@ def run_validation(case_name, case_cfg, paths_cfg, training_cfg, noise_cfg,
         title=f"{case_name}_mode_shapes", save=save_figures, fig_dir=fig_dir,
     )
 
-    # Loss curve
+    # Loss curve (skip if losses.npz not available)
     loss_path = os.path.normpath(os.path.join(dl_model_dir, f'{title}_losses.npz'))
     if os.path.exists(loss_path):
         ld = np.load(loss_path)
@@ -233,6 +233,8 @@ def run_validation(case_name, case_cfg, paths_cfg, training_cfg, noise_cfg,
             ld['train_loss'], ld['val_loss'], training_cfg['checkpoint_epoch'],
             title=f"{case_name}", save=save_figures, fig_dir=fig_dir,
         )
+    else:
+        print(f"Loss log not found ({title}_losses.npz). Skipping loss trend plot.")
 
     # Predict and plot test samples
     n_plot = min(3, X_test.shape[0])
