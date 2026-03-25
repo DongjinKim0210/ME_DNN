@@ -78,56 +78,6 @@ python main.py --case case3 --step all   # Sparse instrumentation case
 python main.py --case case1 --step train --version 260323
 ```
 
-## Project Structure
-
-```
-MED/
-|
-+-- config/                          # Configuration
-|   +-- __init__.py
-|   +-- settings.py                  # All hyperparameters, paths, case definitions
-|
-+-- structure/                       # Structural model definition
-|   +-- __init__.py
-|   +-- properties.py                # MDOFCantil_Property class
-|   +-- fem_model.py                 # OpenSeesPy FE model, dynamic analysis, eigen
-|
-+-- data/                            # Data pipeline
-|   +-- __init__.py
-|   +-- generation.py                # FE-based response data generation
-|   +-- database.py                  # SQLite DB construction (NumPy BLOB storage)
-|   +-- preprocessing.py             # Resampling, masking, tensor conversion
-|   +-- noise.py                     # SNR-based Gaussian noise addition
-|
-+-- models/                          # DNN model definitions
-|   +-- __init__.py
-|   +-- duhamel_layer.py             # Duhamel integral convolution layer
-|   +-- ensemble_model.py            # EnsembleModeDuhamel (full model)
-|   +-- denoising_dnn.py             # Denoising Autoencoder
-|   +-- layers.py                    # MovingAverage1d auxiliary layer
-|
-+-- training/                        # Training logic
-|   +-- __init__.py
-|   +-- trainer.py                   # train() and trainDN() functions
-|   +-- loss.py                      # MSE loss with variable-length masking
-|
-+-- analysis/                        # Result analysis and visualization
-|   +-- __init__.py
-|   +-- result_analysis.py           # Model loading, prediction, metrics
-|   +-- db_inspector.py              # DB verification utility
-|   +-- plotting.py                  # Figure generation and export
-|
-+-- main.py                          # Pipeline orchestrator (CLI entry point)
-+-- README.md
-|
-+-- data_store/                      # Output data files
-|   +-- ResultPreprocessing/         # Preprocessed .npz files
-|   +-- DeepLearningModels/          # Trained model checkpoints (.pth) and loss logs (.npz)
-|   +-- ResponseData/                # FE response data (temporary, cleaned after DB construction)
-|
-+-- Figures/                         # Generated figures (SVG/PNG)
-```
-
 ## Configuration
 
 All hyperparameters are centralized in `config/settings.py`:
@@ -156,13 +106,9 @@ This project includes a Denoising Autoencoder (`models/denoising_dnn.py`) that c
 
 In this open-source release, the SNR level is set to 99 dB (`config/settings.py`: `NOISE = {"snr_db": [99]}`), which effectively treats the ground motion records as denoised acceleration time histories obtained from the DAE. This allows the release to focus on demonstrating the operation and performance of the physics-encoded neural network architecture across the three numerical case studies.
 
-## Pre-trained Weights
-
-The checkpoint files in `data_store/DeepLearningModels/` are initial models trained for only a few epochs. Train with the provided database for sufficient epochs to obtain an optimal model.
-
 ## Database
 
-The SQLite databases and preprocessed `.npz` files exceed GitHub's file size limit and are not included in this repository. **These files can be shared upon request with the consent of all authors.** Once the database files are placed in `data_store/`, run `python main.py --case case1 --step preprocess` to generate the preprocessed data.
+The SQLite databases (`.db`) and preprocessed data (`.npz`) are not included due to GitHub's file size limit. To reproduce from scratch, place PEER NGA-West2 records in `../data/EQ_DATA/` and run `python main.py --case case1 --step all`.
 
 ## Ground Motion Data
 
