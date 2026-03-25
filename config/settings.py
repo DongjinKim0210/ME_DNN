@@ -6,7 +6,7 @@ from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SEED = None  # Set to an integer for reproducibility, e.g., SEED = 42
+SEED = 42  # Set to an integer for reproducibility, e.g., SEED = 42
 
 CASES = {
     "case1": {
@@ -71,7 +71,7 @@ PREPROCESSING = {
 }
 
 TRAINING = {
-    "num_epochs": 100,
+    "num_epochs": 200000,
     "batch_size": 10,
     "validation_batch_size": 10,
     "num_train": 80,

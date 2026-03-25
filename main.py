@@ -64,7 +64,7 @@ def _is_notebook():
 def parse_args():
     if _is_notebook():
         # In Jupyter: return defaults (override via run_pipeline())
-        return argparse.Namespace(case="case1", step="all", version=None)
+        return argparse.Namespace(case="case1", step="validate", version=None)
     parser = argparse.ArgumentParser(description="ModeEnsembleDNN Pipeline")
     parser.add_argument("--case", type=str, default="case1",
                         choices=["case1", "case2", "case3"],
@@ -232,6 +232,10 @@ def step_preprocess(case_cfg, paths, case_name, version):
     print("\n=== PREPROCESSING ===")
     pp = PREPROCESSING
     db_path = get_db_path(case_name, version)
+    if not os.path.exists(db_path):
+        print(f"DB not found: {db_path}")
+        print("Place the database file in data_store/ or run generate/db steps first.")
+        return
     pp_path = get_preprocessed_path(case_name, version)
     dtR = pp['resample_dt']
 
@@ -410,12 +414,14 @@ def run_pipeline(case="case1", step="all", version=None):
 
     props, mass, modes, freqs, Tns = build_structure(case_cfg)
 
-    # Check if raw EQ data is available
+    # Check if raw EQ data is available (AT2 files may be in subdirectories)
     eq_data_dir = PATHS['eq_data_dir']
-    has_eq_data = os.path.isdir(eq_data_dir) and any(
-        f.upper().endswith('.AT2') for f in os.listdir(eq_data_dir)
-        if os.path.isfile(os.path.join(eq_data_dir, f))
-    ) if os.path.isdir(eq_data_dir) else False
+    has_eq_data = False
+    if os.path.isdir(eq_data_dir):
+        for _, _, files in os.walk(eq_data_dir):
+            if any(f.upper().endswith('.AT2') for f in files):
+                has_eq_data = True
+                break
 
     run_all = (step == "all")
 

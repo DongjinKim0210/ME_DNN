@@ -6,7 +6,7 @@ __pycache__/
 # Data store: large runtime-generated files (DB, preprocessed npz)
 data_store/EQRESPDATA_Zerolength7DoF_99_v*.db
 data_store/ResultPreprocessing/*.npz
-
+data_store/DeepLearningModels/*.pth
 # IDE
 .vscode/
 .idea/
